@@ -148,16 +148,29 @@ def do_sniff_once(options):
 
     if (options.send_init):
         if not options.quiet:
-            print("Sending: {}".format(options.send_init))
+            print("> {}".format(options.send_init))
         ser.write(options.send_init)
 
     if (options.read_init):
         if not options.quiet:
             print("Waiting to read: {}".format(options.read_init))
         read = ser.read(len(options.read_init))
+        line = bytearray()
         while True:
+            def printout(b):
+                s = b.decode(encoding='ascii', errors='backslashreplace')
+                print(f"< {s}")
+
             if read == options.read_init:
+                printout(line + read)
                 break
+
+            new = read[:1]
+            if new == b'\n':
+                printout(line)
+                line = bytearray()
+            elif new != b'\r':
+                line += new
             read = read[1:] + ser.read()
 
     if not options.quiet:
