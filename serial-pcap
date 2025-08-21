@@ -113,9 +113,9 @@ def main():
                         help='Do not output any informational messages')
     output = parser.add_mutually_exclusive_group()
     output.add_argument('-F', '--fifo',
-                        help='Write output to a fifo instead of stdout. The fifo is created if needed and capturing does not start until the other side of the fifo is opened.')
+                        help='Write pcap output to a fifo instead of hex to stdout. The fifo is created if needed and capturing does not start until the other side of the fifo is opened.')
     output.add_argument('-w', '--write-file',
-                        help='Write output to a file instead of stdout')
+                        help='Write pcap output to a file instead of hex to stdout')
     parser.add_argument('-d', '--send-init-delay', type=int, default=2,
                         help='Wait for this many seconds between opening the serial port and sending the init string (defaults to %(default)s)')
     # This uses os.fsencode to reverse the bytes-to-string applied to sys.argv
