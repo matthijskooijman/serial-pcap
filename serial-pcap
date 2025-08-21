@@ -118,9 +118,10 @@ def main():
                         help='Write output to a file instead of stdout')
     parser.add_argument('-d', '--send-init-delay', type=int, default=2,
                         help='Wait for this many seconds between opening the serial port and sending the init string (defaults to %(default)s)')
-    parser.add_argument('-s', '--send-init', type=bytes, default=b'module.enable("sniffer"); sniffer.start(1);\r\n',
+    # This uses os.fsencode to reverse the bytes-to-string applied to sys.argv
+    parser.add_argument('-s', '--send-init', type=os.fsencode, default=b'module.enable("sniffer"); sniffer.start(1);\r\n',
                         help='Send the given string over serial to enable capture mode (defaults to %(default)s)')
-    parser.add_argument('-r', '--read-init', type=bytes, default=b'SNIF',
+    parser.add_argument('-r', '--read-init', type=os.fsencode, default=b'SNIF',
                         help='Wait until the given string is read from serial before starting capture (defaults to %(default)s)')
 
     options = parser.parse_args();
