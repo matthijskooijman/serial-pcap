@@ -118,8 +118,7 @@ def main():
                         help='Write pcap output to a file instead of hex to stdout')
     parser.add_argument('-d', '--send-init-delay', type=int, default=2,
                         help='Wait for this many seconds between opening the serial port and sending the init string (defaults to %(default)s)')
-    # This uses os.fsencode to reverse the bytes-to-string applied to sys.argv
-    parser.add_argument('-s', '--send-init', type=os.fsencode, default=b'module.enable("sniffer"); sniffer.start(1);\r\n',
+    parser.add_argument('-s', '--send-init', type=os.fsencode, default=b'B250C20!',
                         help='Send the given string over serial to enable capture mode (defaults to %(default)s)')
     parser.add_argument('-r', '--read-init', type=os.fsencode, default=b'SNIF',
                         help='Wait until the given string is read from serial before starting capture (defaults to %(default)s)')

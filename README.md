@@ -7,14 +7,23 @@ in pcap format.
 You'll need the `pyserial` package.
 You can install it through pip using `pip install pyserial`.
 
-Default arguments are currently aimed at capturing packets using a
-Pinoccio Scout board, so when using a Pinoccio Scout you can just run:
+Default arguments are currently aimed at capturing packets using an
+Atmega256rfr2 microcontroller (with on-chip radio) running the
+[At256rfr2Sniffer](https://github.com/matthijskooijman/At256rfr2Sniffer)
+Arduino sketch.
+
+When running that sketch you can just run:
 
     serial-pcap /dev/ttyACM0
 
 and see packets (raw byte values) on stdout.
 
 For all options supported, run `serial-pcap --help`.
+
+To customize the channel and bitrate values, commands can be sent over
+Serial. See the [At256rfr2Sniffer
+README](https://github.com/matthijskooijman/At256rfr2Sniffer) for
+details.
 
 Live capture with wireshark
 ---------------------------
@@ -39,6 +48,17 @@ This script was developed and tested on Linux. It probably runs on OSX
 too. On Windows, running the live capture through a FIFO probably does
 not work, but capturing to a file probably does.
 
+Decoding LwMesh packets in wireshark
+------------------------------------
+This is a bit of specific advice, but since the pinoccio board that this
+software was originally written for uses the LwMesh protocol, it is
+added here. You can likely ignore it otherwise.
+
+To let Wireshark decode LwMesh packets, configure the key under
+Protocols in the preferences. The format for it is colon-separated hex
+values, so for the default pinoccio key of all ones, enter
+`ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff`.
+
 Related projects
 ----------------
 This script was inspired by [WSBridge][], which serves a similar
@@ -49,15 +69,29 @@ Freaklabs.
 [WSBridge]: http://www.freaklabs.org/index.php/WSBridge.html
 [Chibi]: http://www.freaklabs.org/index.php/Chibi-A-Simple-Open-Source-Wireless-Stack.html
 
-This script should also be usable with [this Contiki-OS example
-program][Contiki-sniff] to sniff using Contiki-supported hardware
-(again, when passed the right commandline options).
+This script should also be usable with the Contiki-OS [sensniff example
+program][Contiki-sensniff] to sniff using Contiki-supported hardware
+(again, when passed the right commandline options, and maybe only with
+the legacy serial format).
 
-[Contiki-sniff]: https://github.com/cetic/contiki/blob/sniffer/examples/sniffer/sniffer.c
+[Contiki-sensniff]: https://github.com/cetic/contiki/tree/master/examples/sensniff
+
+Neither of these two options were tested.
+
+This script was originally created at
+https://github.com/Pinoccio/tool-serial-pcap and intended to be used
+with the Pinoccio dev board and firmware. Development on Pinoccio has
+since halted, so in 2025 this repo was moved here and slightly adapted
+to work with the more generic At256rfr2Sniffer sketch instead of the
+Pinoccio firmware.
 
 License
 -------
 This script and related content is licensed under the MIT license.
+
+Copyright (c) 2012-2014, Pinoccio Inc. All rights reserved.
+
+Copyright (c) 2025, Matthijs Kooijman <matthijs@stdin.nl>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
