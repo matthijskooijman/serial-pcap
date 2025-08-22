@@ -38,6 +38,7 @@ import binascii
 import datetime
 import argparse
 
+
 class Formatter:
     def __init__(self, out):
         self.out = out
@@ -48,9 +49,11 @@ class Formatter:
     def close(self):
         self.out.close()
 
+
 class PcapFormatter(Formatter):
     def write_header(self):
-        self.out.write(struct.pack("=IHHiIII",
+        self.out.write(struct.pack(
+            "=IHHiIII",
             0xa1b2c3d4,   # magic number
             2,            # major version number
             4,            # minor version number
@@ -64,7 +67,8 @@ class PcapFormatter(Formatter):
     def write_packet(self, data):
         now = datetime.datetime.now()
         timestamp = int(time.mktime(now.timetuple()))
-        self.out.write(struct.pack("=IIII",
+        self.out.write(struct.pack(
+            "=IIII",
             timestamp,        # timestamp seconds
             now.microsecond,  # timestamp microseconds
             len(data),        # number of octets of packet saved in file
@@ -72,6 +76,7 @@ class PcapFormatter(Formatter):
         ))
         self.out.write(data)
         self.out.flush()
+
 
 class HumanFormatter(Formatter):
     def write_header(self):
@@ -82,18 +87,18 @@ class HumanFormatter(Formatter):
         self.out.write("\n")
         self.out.flush()
 
+
 def open_fifo(options, name):
     try:
-        os.mkfifo(name);
+        os.mkfifo(name)
     except FileExistsError:
         pass
-    except:
-        raise
 
     if not options.quiet:
         print("Waiting for fifo to be openend...")
     # This blocks until the other side of the fifo is opened
     return open(name, 'wb')
+
 
 def setup_output(options):
     if options.fifo:
@@ -102,6 +107,7 @@ def setup_output(options):
         return PcapFormatter(open(options.write_file, 'wb'))
     else:
         return HumanFormatter(sys.stdout)
+
 
 def main():
     parser = argparse.ArgumentParser(description='Convert 802.15.4 packets read from a serial port into pcap format')
@@ -113,17 +119,20 @@ def main():
                         help='Do not output any informational messages')
     output = parser.add_mutually_exclusive_group()
     output.add_argument('-F', '--fifo',
-                        help='Write pcap output to a fifo instead of hex to stdout. The fifo is created if needed and capturing does not start until the other side of the fifo is opened.')
+                        help='Write pcap output to a fifo instead of hex to stdout. The fifo is created if needed and'
+                        + 'capturing does not start until the other side of the fifo is opened.')
     output.add_argument('-w', '--write-file',
                         help='Write pcap output to a file instead of hex to stdout')
     parser.add_argument('-d', '--send-init-delay', type=int, default=2,
-                        help='Wait for this many seconds between opening the serial port and sending the init string (defaults to %(default)s)')
+                        help='Wait for this many seconds between opening the serial port and sending the init string'
+                        + ' (defaults to %(default)s)')
     parser.add_argument('-s', '--send-init', type=os.fsencode, default=b'B250C20!',
                         help='Send the given string over serial to enable capture mode (defaults to %(default)s)')
     parser.add_argument('-r', '--read-init', type=os.fsencode, default=b'SNIF',
-                        help='Wait until the given string is read from serial before starting capture (defaults to %(default)s)')
+                        help='Wait until the given string is read from serial before starting capture (defaults to'
+                        + ' %(default)s)')
 
-    options = parser.parse_args();
+    options = parser.parse_args()
 
     try:
         # If the fifo got closed, just start over again
@@ -131,6 +140,7 @@ def main():
             do_sniff_once(options)
     except KeyboardInterrupt:
         pass
+
 
 def do_sniff_once(options):
     # This might block until the other side of the fifo is opened
@@ -142,7 +152,9 @@ def do_sniff_once(options):
 
     if options.send_init_delay:
         if not options.quiet:
-            print("Waiting for {} second{}".format(options.send_init_delay, 's' if options.send_init_delay != 1 else ''))
+            print("Waiting for {} second{}".format(
+                options.send_init_delay, 's' if options.send_init_delay != 1 else '')
+            )
         time.sleep(options.send_init_delay)
 
     if (options.send_init):
@@ -206,6 +218,7 @@ def do_sniff_once(options):
 
     if not options.quiet:
         print("Captured {} packet{}".format(count, 's' if count != 1 else ''))
+
 
 if __name__ == '__main__':
     main()
